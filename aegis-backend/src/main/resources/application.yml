@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: aegis-backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/aegis}
+    username: ${SPRING_DATASOURCE_USERNAME:aegis}
+    password: ${SPRING_DATASOURCE_PASSWORD:aegis_secret_2024}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      password: ${SPRING_DATA_REDIS_PASSWORD:aegis_redis_2024}
+  neo4j:
+    uri: ${SPRING_NEO4J_URI:bolt://localhost:7687}
+    authentication:
+      username: ${SPRING_NEO4J_AUTHENTICATION_USERNAME:neo4j}
+      password: ${SPRING_NEO4J_AUTHENTICATION_PASSWORD:aegis_graph_2024}
+  mail:
+    host: ${SPRING_MAIL_HOST:localhost}
+    port: ${SPRING_MAIL_PORT:1025}
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+aegis:
+  minio:
+    endpoint: ${AEGIS_MINIO_ENDPOINT:http://localhost:9000}
+    access-key: ${AEGIS_MINIO_ACCESS_KEY:aegis_minio}
+    secret-key: ${AEGIS_MINIO_SECRET_KEY:aegis_minio_secret_2024}
+  jwt:
+    secret: ${AEGIS_JWT_SECRET:aegis-super-secret-jwt-key-2024-must-be-at-least-256-bits-long-for-HS256}
+    expiration: ${AEGIS_JWT_EXPIRATION:86400000} # 1 day
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+logging:
+  level:
+    org.springframework.security: INFO
+    org.flywaydb: INFO
