@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Reports · AEGIS</title>
+</head>
+<body>
+<section>
+    <div class="topbar">
+        <h1 th:text="${project.name + ' — Reports'}">Reports</h1>
+        <div class="user-meta" th:text="${user.email}">user</div>
+    </div>
+    <div class="project-nav" th:replace="~{fragments/project-nav :: projectNav(${project}, ${activeNav})}"></div>
+    <div class="panel">
+        <h2>On-demand exports</h2>
+        <p class="muted">Reports are generated on the fly and are not stored in the database.</p>
+        <p>
+            <a class="btn" th:href="@{/web/projects/{id}/reports/security.pdf(id=${project.id})}">Download security PDF</a>
+            <a class="btn secondary" th:href="@{/web/projects/{id}/reports/vulnerabilities.csv(id=${project.id})}">Download vulnerabilities CSV</a>
+        </p>
+    </div>
+</section>
+</body>
+</html>

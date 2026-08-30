@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Alerts · AEGIS</title>
+</head>
+<body>
+<section>
+    <div class="topbar">
+        <h1 th:text="${project.name + ' — Alerts'}">Alerts</h1>
+        <div class="user-meta" th:text="${user.email}">user</div>
+    </div>
+    <div class="project-nav" th:replace="~{fragments/project-nav :: projectNav(${project}, ${activeNav})}"></div>
+    <div class="panel">
+        <p class="muted" th:if="${message != null}" th:text="${message}">No alerts.</p>
+        <table class="table" th:if="${alerts != null and !alerts.isEmpty()}">
+            <thead><tr><th>Type</th><th>Severity</th><th>Title</th><th>Acknowledged</th><th>When</th></tr></thead>
+            <tbody>
+            <tr th:each="a : ${alerts}">
+                <td th:text="${a.alertType}">TYPE</td>
+                <td th:text="${a.severity}">HIGH</td>
+                <td th:text="${a.title}">title</td>
+                <td th:text="${a.acknowledged}">false</td>
+                <td th:text="${a.createdAt}">ts</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

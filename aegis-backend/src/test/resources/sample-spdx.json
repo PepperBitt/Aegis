@@ -1,0 +1,56 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "AEGIS SPDX Sample",
+  "documentNamespace": "http://spdx.org/spdxdocs/aegis-spdx-1.0",
+  "creationInfo": {
+    "creators": [
+      "Organization: AEGIS Team"
+    ],
+    "created": "2024-01-01T00:00:00Z"
+  },
+  "packages": [
+    {
+      "name": "commons-lang3",
+      "SPDXID": "SPDXRef-Package-commons-lang3",
+      "versionInfo": "3.14.0",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:maven/org.apache.commons/commons-lang3@3.14.0"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b85"
+        }
+      ]
+    },
+    {
+      "name": "commons-io",
+      "SPDXID": "SPDXRef-Package-commons-io",
+      "versionInfo": "2.17.0",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:maven/commons-io/commons-io@2.17.0"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-commons-lang3",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-commons-io"
+    }
+  ]
+}

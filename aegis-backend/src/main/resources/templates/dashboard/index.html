@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Dashboard · AEGIS</title>
+</head>
+<body>
+<section>
+    <div class="topbar">
+        <h1>Dashboard</h1>
+        <div class="user-meta" th:text="${user.fullName + ' · ' + user.email}">User</div>
+    </div>
+
+    <div class="panel">
+        <h2>Welcome to AEGIS</h2>
+        <p class="muted">Your organizations and projects for software bill of materials risk monitoring.</p>
+    </div>
+
+    <div class="panel">
+        <h2>Organizations</h2>
+        <table class="table" th:if="${!organizations.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Plan</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="org : ${organizations}">
+                <td th:text="${org.name}">Org</td>
+                <td th:text="${org.slug}">slug</td>
+                <td><span class="badge" th:text="${org.plan}">FREE</span></td>
+                <td><a th:href="@{/web/organizations/{id}/projects(id=${org.id})}">Projects</a></td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${organizations.isEmpty()}">No organizations yet. Create one via the API.</p>
+    </div>
+</section>
+</body>
+</html>

@@ -17,14 +17,30 @@ spring:
     redis:
       host: localhost
       port: 6379
+  main:
+    allow-bean-definition-overriding: true
   neo4j:
     enabled: false
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration
       - org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
 aegis:
   jwt:
-    secret: aegis-super-secret-jwt-key-2024-must-be-at-least-256-bits-long-for-HS256
+    secret: test-only-jwt-secret-key-must-be-at-least-256-bits-long-hs256-for-unit-testing
     expiration: 3600000 # 1 hour
+  rate-limit:
+    login:
+      enabled: false
+  minio:
+    endpoint: http://localhost:9000
+    access-key: test
+    secret-key: test
+  vulnerability:
+    osv-url: http://localhost:9/v1/query

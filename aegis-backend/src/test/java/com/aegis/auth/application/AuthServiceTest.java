@@ -1,9 +1,11 @@
 package com.aegis.auth.application;
 
 import com.aegis.auth.api.dto.LoginRequest;
+import com.aegis.auth.api.dto.RefreshRequest;
 import com.aegis.auth.api.dto.RegisterRequest;
 import com.aegis.auth.api.dto.TokenResponse;
 import com.aegis.auth.api.dto.UserResponse;
+import com.aegis.auth.domain.RefreshToken;
 import com.aegis.auth.domain.Role;
 import com.aegis.auth.domain.User;
 import com.aegis.auth.infrastructure.RefreshTokenRepository;
@@ -18,6 +20,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,6 +47,9 @@ class AuthServiceTest {
 
     @Mock
     private AuthenticationManager authenticationManager;
+
+    @Mock
+    private LoginRateLimiter loginRateLimiter;
 
     @InjectMocks
     private AuthService authService;
@@ -112,7 +120,85 @@ class AuthServiceTest {
         assertEquals("jwt_access_token", response.getAccessToken());
         assertNotNull(response.getRefreshToken());
         assertEquals("Bearer", response.getTokenType());
+        verify(loginRateLimiter, times(1)).checkAndIncrement("127.0.0.1", "test@aegis.local");
         verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(refreshTokenRepository, times(1)).save(any());
+    }
+
+    @Test
+    void refreshToken_ShouldRotateTokens_WhenTokenIsValid() {
+        String rawToken = "valid-raw-refresh-token";
+        String tokenHash = authService.hashToken(rawToken);
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .id(UUID.randomUUID())
+                .user(user)
+                .tokenHash(tokenHash)
+                .expiresAt(Instant.now().plus(1, ChronoUnit.DAYS))
+                .revoked(false)
+                .build();
+
+        RefreshRequest request = RefreshRequest.builder()
+                .refreshToken(rawToken)
+                .build();
+
+        when(refreshTokenRepository.findByTokenHash(tokenHash)).thenReturn(Optional.of(refreshToken));
+        when(jwtService.generateToken(user)).thenReturn("new_jwt_access_token");
+        when(jwtService.getExpirationTime()).thenReturn(3600000L);
+
+        TokenResponse response = authService.refreshToken(request);
+
+        assertNotNull(response);
+        assertEquals("new_jwt_access_token", response.getAccessToken());
+        assertNotNull(response.getRefreshToken());
+        assertNotEquals(rawToken, response.getRefreshToken());
+        assertTrue(refreshToken.isRevoked());
+        verify(refreshTokenRepository, times(2)).save(any(RefreshToken.class));
+    }
+
+    @Test
+    void refreshToken_ShouldRevokeAllUserTokens_WhenRevokedTokenIsReused() {
+        String rawToken = "stolen-revoked-token";
+        String tokenHash = authService.hashToken(rawToken);
+
+        RefreshToken revokedToken = RefreshToken.builder()
+                .id(UUID.randomUUID())
+                .user(user)
+                .tokenHash(tokenHash)
+                .expiresAt(Instant.now().plus(1, ChronoUnit.DAYS))
+                .revoked(true)
+                .build();
+
+        RefreshRequest request = RefreshRequest.builder()
+                .refreshToken(rawToken)
+                .build();
+
+        when(refreshTokenRepository.findByTokenHash(tokenHash)).thenReturn(Optional.of(revokedToken));
+        when(refreshTokenRepository.findByUserIdAndRevokedFalse(user.getId())).thenReturn(Collections.emptyList());
+
+        assertThrows(IllegalArgumentException.class, () -> authService.refreshToken(request));
+        verify(refreshTokenRepository, times(1)).findByUserIdAndRevokedFalse(user.getId());
+    }
+
+    @Test
+    void refreshToken_ShouldThrowException_WhenTokenIsExpired() {
+        String rawToken = "expired-token";
+        String tokenHash = authService.hashToken(rawToken);
+
+        RefreshToken expiredToken = RefreshToken.builder()
+                .id(UUID.randomUUID())
+                .user(user)
+                .tokenHash(tokenHash)
+                .expiresAt(Instant.now().minus(1, ChronoUnit.DAYS))
+                .revoked(false)
+                .build();
+
+        RefreshRequest request = RefreshRequest.builder()
+                .refreshToken(rawToken)
+                .build();
+
+        when(refreshTokenRepository.findByTokenHash(tokenHash)).thenReturn(Optional.of(expiredToken));
+
+        assertThrows(IllegalArgumentException.class, () -> authService.refreshToken(request));
     }
 }

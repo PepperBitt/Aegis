@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="projectNav(project, activeNav)" class="project-nav">
+    <a th:href="@{/web/projects/{id}(id=${project.id})}" th:classappend="${activeNav == 'projects'} ? ' active'">Overview</a>
+    <a th:href="@{/web/projects/{id}/sboms(id=${project.id})}" th:classappend="${activeNav == 'sboms'} ? ' active'">SBOMs</a>
+    <a th:href="@{/web/projects/{id}/vulnerabilities(id=${project.id})}" th:classappend="${activeNav == 'vulnerabilities'} ? ' active'">Vulnerabilities</a>
+    <a th:href="@{/web/projects/{id}/risk(id=${project.id})}" th:classappend="${activeNav == 'risk'} ? ' active'">Risk</a>
+    <a th:href="@{/web/projects/{id}/policies(id=${project.id})}" th:classappend="${activeNav == 'policies'} ? ' active'">Policies</a>
+    <a th:href="@{/web/projects/{id}/gates(id=${project.id})}" th:classappend="${activeNav == 'gates'} ? ' active'">Gates</a>
+    <a th:href="@{/web/projects/{id}/alerts(id=${project.id})}" th:classappend="${activeNav == 'alerts'} ? ' active'">Alerts</a>
+    <a th:href="@{/web/projects/{id}/audit(id=${project.id})}" th:classappend="${activeNav == 'audit'} ? ' active'">Audit</a>
+    <a th:href="@{/web/projects/{id}/reports(id=${project.id})}" th:classappend="${activeNav == 'reports'} ? ' active'">Reports</a>
+</div>
+</body>
+</html>

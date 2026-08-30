@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>SBOM Detail · AEGIS</title>
+</head>
+<body>
+<section>
+    <div class="topbar">
+        <h1 th:text="${sbom.name}">SBOM</h1>
+        <div class="user-meta" th:text="${user.email}">user</div>
+    </div>
+    <div class="project-nav" th:replace="~{fragments/project-nav :: projectNav(${project}, ${activeNav})}"></div>
+    <div class="panel">
+        <p>
+            Format <span class="badge" th:text="${sbom.format}">CYCLONEDX</span>
+            · Version <span th:text="${sbom.version}">1.0</span>
+            · Components <span th:text="${sbom.componentCount}">0</span>
+        </p>
+    </div>
+    <div class="panel">
+        <h2>Components</h2>
+        <table class="table" th:if="${!components.isEmpty()}">
+            <thead>
+            <tr><th>Name</th><th>Version</th><th>PURL</th><th>License</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${components}">
+                <td th:text="${c.name}">name</td>
+                <td th:text="${c.version}">1.0</td>
+                <td th:text="${c.purl}">pkg:</td>
+                <td th:text="${c.licenseExpression}">MIT</td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${components.isEmpty()}">No components.</p>
+    </div>
+</section>
+</body>
+</html>

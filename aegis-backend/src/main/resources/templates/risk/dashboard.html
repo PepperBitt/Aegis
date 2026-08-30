@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Risk · AEGIS</title>
+</head>
+<body>
+<section>
+    <div class="topbar">
+        <h1 th:text="${project.name + ' — Risk'}">Risk</h1>
+        <div class="user-meta" th:text="${user.email}">user</div>
+    </div>
+    <div class="project-nav" th:replace="~{fragments/project-nav :: projectNav(${project}, ${activeNav})}"></div>
+
+    <div class="grid-2">
+        <div class="stat">
+            <div class="label">Risk score</div>
+            <div class="value" th:text="${risk.riskScore}">0</div>
+        </div>
+        <div class="stat">
+            <div class="label">Grade</div>
+            <div class="value" th:text="${risk.riskGrade}">A</div>
+        </div>
+    </div>
+
+    <div class="panel" style="margin-top:1rem;">
+        <h2>Severity counts</h2>
+        <p>
+            Critical <strong th:text="${risk.criticalCount}">0</strong> ·
+            High <strong th:text="${risk.highCount}">0</strong> ·
+            Medium <strong th:text="${risk.mediumCount}">0</strong> ·
+            Low <strong th:text="${risk.lowCount}">0</strong>
+        </p>
+        <p class="muted" th:if="${risk.calculatedAt != null}" th:text="|Calculated at ${risk.calculatedAt}|">ts</p>
+    </div>
+
+    <div class="panel">
+        <h2>History</h2>
+        <table class="table" th:if="${!history.isEmpty()}">
+            <thead>
+            <tr><th>When</th><th>Score</th><th>Grade</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="h : ${history}">
+                <td th:text="${h.calculatedAt}">ts</td>
+                <td th:text="${h.riskScore}">0</td>
+                <td th:text="${h.riskGrade}">A</td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${history.isEmpty()}">No history yet.</p>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>SBOMs · AEGIS</title>
+</head>
+<body>
+<section>
+    <div class="topbar">
+        <h1 th:text="${project.name + ' — SBOMs'}">SBOMs</h1>
+        <div class="user-meta" th:text="${user.email}">user</div>
+    </div>
+    <div class="project-nav" th:replace="~{fragments/project-nav :: projectNav(${project}, ${activeNav})}"></div>
+    <div class="panel">
+        <table class="table" th:if="${!sboms.isEmpty()}">
+            <thead>
+            <tr><th>Name</th><th>Format</th><th>Components</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="s : ${sboms}">
+                <td th:text="${s.name}">sbom</td>
+                <td th:text="${s.format}">CYCLONEDX</td>
+                <td th:text="${s.componentCount}">0</td>
+                <td th:text="${s.status}">COMPLETED</td>
+                <td><a th:href="@{/web/projects/{pid}/sboms/{sid}(pid=${project.id},sid=${s.id})}">Details</a></td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${sboms.isEmpty()}">No SBOMs uploaded for this project.</p>
+    </div>
+</section>
+</body>
+</html>

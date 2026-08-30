@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: aegis
       POSTGRES_USER: aegis
-      POSTGRES_PASSWORD: aegis_secret_2024
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-dev_postgres_password}
     ports:
       - "5432:5432"
     volumes:
@@ -21,7 +21,7 @@ services:
     image: neo4j:5.24-community
     container_name: aegis-neo4j
     environment:
-      NEO4J_AUTH: neo4j/aegis_graph_2024
+      NEO4J_AUTH: neo4j/${SPRING_NEO4J_AUTHENTICATION_PASSWORD:-dev_neo4j_password}
       NEO4J_PLUGINS: '["apoc"]'
       NEO4J_dbms_security_procedures_unrestricted: apoc.*
     ports:
@@ -40,13 +40,13 @@ services:
   redis:
     image: redis:7-alpine
     container_name: aegis-redis
-    command: redis-server --requirepass aegis_redis_2024
+    command: redis-server --requirepass ${SPRING_DATA_REDIS_PASSWORD:-dev_redis_password}
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "aegis_redis_2024", "ping"]
+      test: ["CMD-SHELL", "redis-cli -a ${SPRING_DATA_REDIS_PASSWORD:-dev_redis_password} ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -56,8 +56,8 @@ services:
     container_name: aegis-minio
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: aegis_minio
-      MINIO_ROOT_PASSWORD: aegis_minio_secret_2024
+      MINIO_ROOT_USER: ${AEGIS_MINIO_ACCESS_KEY:-aegis_minio}
+      MINIO_ROOT_PASSWORD: ${AEGIS_MINIO_SECRET_KEY:-dev_minio_secret_key}
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -87,19 +87,19 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aegis
       SPRING_DATASOURCE_USERNAME: aegis
-      SPRING_DATASOURCE_PASSWORD: aegis_secret_2024
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-dev_postgres_password}
       SPRING_NEO4J_URI: bolt://neo4j:7687
       SPRING_NEO4J_AUTHENTICATION_USERNAME: neo4j
-      SPRING_NEO4J_AUTHENTICATION_PASSWORD: aegis_graph_2024
+      SPRING_NEO4J_AUTHENTICATION_PASSWORD: ${SPRING_NEO4J_AUTHENTICATION_PASSWORD:-dev_neo4j_password}
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-      SPRING_DATA_REDIS_PASSWORD: aegis_redis_2024
+      SPRING_DATA_REDIS_PASSWORD: ${SPRING_DATA_REDIS_PASSWORD:-dev_redis_password}
       SPRING_MAIL_HOST: mailhog
       SPRING_MAIL_PORT: 1025
       AEGIS_MINIO_ENDPOINT: http://minio:9000
-      AEGIS_MINIO_ACCESS_KEY: aegis_minio
-      AEGIS_MINIO_SECRET_KEY: aegis_minio_secret_2024
-      AEGIS_JWT_SECRET: aegis-super-secret-jwt-key-2024-must-be-at-least-256-bits-long-for-HS256
+      AEGIS_MINIO_ACCESS_KEY: ${AEGIS_MINIO_ACCESS_KEY:-aegis_minio}
+      AEGIS_MINIO_SECRET_KEY: ${AEGIS_MINIO_SECRET_KEY:-dev_minio_secret_key}
+      AEGIS_JWT_SECRET: ${AEGIS_JWT_SECRET:-dev_jwt_secret_key_must_be_at_least_256_bits_long_for_hs256_signing}
       AEGIS_JWT_EXPIRATION: 86400000
     depends_on:
       postgres:
@@ -112,17 +112,6 @@ services:
         condition: service_healthy
     volumes:
       - reports_data:/app/reports
-    restart: on-failure
-
-  aegis-frontend:
-    build:
-      context: ./aegis-frontend
-      dockerfile: Dockerfile
-    container_name: aegis-frontend
-    ports:
-      - "3000:80"
-    depends_on:
-      - aegis-backend
     restart: on-failure
 
 volumes:

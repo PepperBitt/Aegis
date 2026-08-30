@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Gates · AEGIS</title>
+</head>
+<body>
+<section>
+    <div class="topbar">
+        <h1 th:text="${project.name + ' — Gates'}">Gates</h1>
+        <div class="user-meta" th:text="${user.email}">user</div>
+    </div>
+    <div class="project-nav" th:replace="~{fragments/project-nav :: projectNav(${project}, ${activeNav})}"></div>
+    <div class="panel">
+        <p class="muted" th:if="${message != null}" th:text="${message}">No gate checks yet.</p>
+        <table class="table" th:if="${gates != null and !gates.isEmpty()}">
+            <thead><tr><th>Result</th><th>Score</th><th>Grade</th><th>Failed policies</th><th>When</th></tr></thead>
+            <tbody>
+            <tr th:each="g : ${gates}">
+                <td th:text="${g.result}">PASS</td>
+                <td th:text="${g.riskScore}">0</td>
+                <td th:text="${g.riskGrade}">A</td>
+                <td th:text="${g.policiesFailed}">0</td>
+                <td th:text="${g.createdAt}">ts</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

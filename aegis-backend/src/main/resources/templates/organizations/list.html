@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Organizations · AEGIS</title>
+</head>
+<body>
+<section>
+    <div class="topbar">
+        <h1>Organizations</h1>
+        <div class="user-meta" th:text="${user.email}">user</div>
+    </div>
+    <div class="panel">
+        <table class="table" th:if="${!organizations.isEmpty()}">
+            <thead>
+            <tr><th>Name</th><th>Slug</th><th>Plan</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="org : ${organizations}">
+                <td th:text="${org.name}">Name</td>
+                <td th:text="${org.slug}">slug</td>
+                <td th:text="${org.plan}">FREE</td>
+                <td><a th:href="@{/web/organizations/{id}/projects(id=${org.id})}">View projects</a></td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${organizations.isEmpty()}">No organizations found.</p>
+    </div>
+</section>
+</body>
+</html>

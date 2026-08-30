@@ -40,6 +40,9 @@ public class ApiKey {
     @Column(name = "last_used_at")
     private Instant lastUsedAt;
 
+    @Column(nullable = false)
+    private boolean revoked;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

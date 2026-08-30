@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Sign in · AEGIS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/aegis.css}"/>
+</head>
+<body>
+<div class="login-page">
+    <div class="login-card">
+        <div class="brand">AEGIS</div>
+        <p class="tagline">Sign in to monitor SBOM risk, vulnerabilities, and audit activity.</p>
+
+        <p th:if="${param.error}" class="error">Invalid email or password.</p>
+        <p th:if="${param.logout}" class="muted">You have been signed out.</p>
+
+        <form th:action="@{/login}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <div class="form-group">
+                <label for="username">Email</label>
+                <input id="username" name="username" type="email" autocomplete="username" required/>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" autocomplete="current-password" required/>
+            </div>
+            <button class="btn" type="submit">Sign in</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

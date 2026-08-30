@@ -17,7 +17,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${aegis.jwt.secret:aegis-super-secret-jwt-key-2024-must-be-at-least-256-bits-long-for-HS256}")
+    @Value("${aegis.jwt.secret}")
     private String secret;
 
     @Value("${aegis.jwt.expiration:86400000}") // default 1 day

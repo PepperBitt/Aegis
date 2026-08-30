@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Audit · AEGIS</title>
+</head>
+<body>
+<section>
+    <div class="topbar">
+        <h1 th:text="${project.name + ' — Audit'}">Audit</h1>
+        <div class="user-meta" th:text="${user.email}">user</div>
+    </div>
+    <div class="project-nav" th:replace="~{fragments/project-nav :: projectNav(${project}, ${activeNav})}"></div>
+    <div class="panel">
+        <table class="table" th:if="${!auditLogs.isEmpty()}">
+            <thead>
+            <tr><th>When</th><th>Action</th><th>Resource</th><th>Result</th><th>IP</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="log : ${auditLogs}">
+                <td th:text="${log.createdAt}">ts</td>
+                <td th:text="${log.action}">ACTION</td>
+                <td th:text="${(log.resourceType != null ? log.resourceType : '') + ' ' + (log.resourceId != null ? log.resourceId : '')}">res</td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${log.result != null and log.result.name() == 'SUCCESS'} ? ' ok' : ' critical'"
+                          th:text="${log.result}">SUCCESS</span>
+                </td>
+                <td th:text="${log.ipAddress}">127.0.0.1</td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${auditLogs.isEmpty()}">No audit events for this project yet.</p>
+    </div>
+</section>
+</body>
+</html>

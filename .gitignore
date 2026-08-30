@@ -36,3 +36,22 @@ aegis-backend/target/
 # Local tools
 tools/
 
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Runtime / generated files
+e2e-artifacts/
+
+# Local databases / storage
+*.db
+*.sqlite
+*.sqlite3
+

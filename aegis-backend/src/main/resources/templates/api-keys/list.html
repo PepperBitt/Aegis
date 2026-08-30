@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>API Keys · AEGIS</title>
+</head>
+<body>
+<section>
+    <div class="topbar">
+        <h1>API Keys</h1>
+        <div class="user-meta" th:text="${user.email}">user</div>
+    </div>
+    <div class="panel">
+        <table class="table" th:if="${!apiKeys.isEmpty()}">
+            <thead>
+            <tr><th>Name</th><th>Prefix</th><th>Scopes</th><th>Revoked</th><th>Expires</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="k : ${apiKeys}">
+                <td th:text="${k.name}">name</td>
+                <td th:text="${k.keyPrefix}">aegis_key_</td>
+                <td th:text="${k.scopes}">read</td>
+                <td th:text="${k.revoked}">false</td>
+                <td th:text="${k.expiresAt}">—</td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${apiKeys.isEmpty()}">No API keys yet. Create them via the API.</p>
+    </div>
+</section>
+</body>
+</html>

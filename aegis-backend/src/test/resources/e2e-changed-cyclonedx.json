@@ -1,0 +1,39 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:bbbbbbbb-cccc-dddd-eeee-ffffffffffff",
+  "version": 2,
+  "metadata": {
+    "component": {
+      "name": "aegis-demo-app",
+      "version": "2.0.0",
+      "type": "application"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:maven/com.example/safe-lib@2.0.0",
+      "type": "library",
+      "name": "safe-lib",
+      "version": "2.0.0",
+      "purl": "pkg:maven/com.example/safe-lib@2.0.0",
+      "licenses": [{ "license": { "id": "MIT" } }]
+    },
+    {
+      "bom-ref": "pkg:maven/com.example/other-lib@1.0.0",
+      "type": "library",
+      "name": "other-lib",
+      "version": "1.0.0",
+      "purl": "pkg:maven/com.example/other-lib@1.0.0",
+      "licenses": [{ "license": { "id": "GPL-3.0-only" } }]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:maven/com.example/other-lib@1.0.0",
+      "dependsOn": [
+        "pkg:maven/com.example/safe-lib@2.0.0"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2024-06-01T00:00:00Z",
+    "component": {
+      "name": "aegis-demo-app",
+      "version": "1.0.0",
+      "type": "application"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1",
+      "type": "library",
+      "group": "org.apache.logging.log4j",
+      "name": "log4j-core",
+      "version": "2.14.1",
+      "purl": "pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1",
+      "licenses": [{ "license": { "id": "Apache-2.0" } }]
+    },
+    {
+      "bom-ref": "pkg:maven/commons-collections/commons-collections@3.2.1",
+      "type": "library",
+      "group": "commons-collections",
+      "name": "commons-collections",
+      "version": "3.2.1",
+      "purl": "pkg:maven/commons-collections/commons-collections@3.2.1",
+      "licenses": [{ "license": { "id": "Apache-2.0" } }]
+    },
+    {
+      "bom-ref": "pkg:maven/com.example/safe-lib@1.0.0",
+      "type": "library",
+      "name": "safe-lib",
+      "version": "1.0.0",
+      "purl": "pkg:maven/com.example/safe-lib@1.0.0",
+      "licenses": [{ "license": { "id": "MIT" } }]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1",
+      "dependsOn": [
+        "pkg:maven/commons-collections/commons-collections@3.2.1"
+      ]
+    },
+    {
+      "ref": "pkg:maven/commons-collections/commons-collections@3.2.1",
+      "dependsOn": [
+        "pkg:maven/com.example/safe-lib@1.0.0"
+      ]
+    }
+  ]
+}

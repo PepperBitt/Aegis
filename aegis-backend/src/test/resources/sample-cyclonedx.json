@@ -1,0 +1,64 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2024-01-01T00:00:00Z",
+    "component": {
+      "name": "aegis-backend",
+      "version": "1.0.0",
+      "type": "application"
+    },
+    "supplier": {
+      "name": "AEGIS Security"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-starter-web@3.3.5?type=jar",
+      "type": "library",
+      "group": "org.springframework.boot",
+      "name": "spring-boot-starter-web",
+      "version": "3.3.5",
+      "description": "Starter for building web applications",
+      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-web@3.3.5?type=jar",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.17.0?type=jar",
+      "type": "library",
+      "group": "com.fasterxml.jackson.core",
+      "name": "jackson-databind",
+      "version": "2.17.0",
+      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.17.0?type=jar",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:maven/org.springframework.boot/spring-boot-starter-web@3.3.5?type=jar",
+      "dependsOn": [
+        "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.17.0?type=jar"
+      ]
+    }
+  ]
+}

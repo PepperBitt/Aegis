@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-@Tag(name = "Authentication", description = "Endpoints for user registration, login, and token refresh")
+@Tag(name = "Authentication", description = "Endpoints for user registration, login, token refresh, and user profile")
 public class AuthController {
 
     private final AuthService authService;
@@ -38,10 +39,12 @@ public class AuthController {
     @Operation(summary = "Authenticate user", description = "Logs in user and returns JWT access token and refresh token.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Authentication successful"),
-            @ApiResponse(responseCode = "401", description = "Invalid credentials")
+            @ApiResponse(responseCode = "401", description = "Invalid credentials"),
+            @ApiResponse(responseCode = "429", description = "Too many login attempts")
     })
-    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
+        String clientIp = getClientIp(request);
+        return ResponseEntity.ok(authService.login(loginRequest, clientIp));
     }
 
     @PostMapping("/refresh")
@@ -66,12 +69,14 @@ public class AuthController {
         }
         User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        return ResponseEntity.ok(UserResponse.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .role(user.getRole())
-                .isActive(user.isActive())
-                .build());
+        return ResponseEntity.ok(authService.mapToUserResponse(user));
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String xfHeader = request.getHeader("X-Forwarded-For");
+        if (xfHeader == null || xfHeader.isBlank()) {
+            return request.getRemoteAddr();
+        }
+        return xfHeader.split(",")[0].trim();
     }
 }

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Vulnerabilities · AEGIS</title>
+</head>
+<body>
+<section>
+    <div class="topbar">
+        <h1 th:text="${project.name + ' — Vulnerabilities'}">Vulnerabilities</h1>
+        <div class="user-meta" th:text="${user.email}">user</div>
+    </div>
+    <div class="project-nav" th:replace="~{fragments/project-nav :: projectNav(${project}, ${activeNav})}"></div>
+    <div class="panel">
+        <table class="table" th:if="${!vulnerabilities.isEmpty()}">
+            <thead>
+            <tr>
+                <th>CVE</th><th>Title</th><th>Severity</th><th>CVSS</th>
+                <th>Component</th><th>Suppressed</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="v : ${vulnerabilities}">
+                <td th:text="${v.cveId != null ? v.cveId : v.osvId}">CVE</td>
+                <td th:text="${v.title}">title</td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${v.severity != null and v.severity.name() == 'CRITICAL'} ? ' critical' : (${v.severity != null and v.severity.name() == 'HIGH'} ? ' high' : '')"
+                          th:text="${v.severity}">HIGH</span>
+                </td>
+                <td th:text="${v.cvssScore}">7.5</td>
+                <td th:text="${v.componentName + ' @ ' + v.componentVersion}">comp</td>
+                <td th:text="${v.suppressed}">false</td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${vulnerabilities.isEmpty()}">No vulnerabilities correlated yet.</p>
+    </div>
+</section>
+</body>
+</html>

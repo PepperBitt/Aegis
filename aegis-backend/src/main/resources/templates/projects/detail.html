@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title th:text="${project.name + ' · AEGIS'}">Project · AEGIS</title>
+</head>
+<body>
+<section>
+    <div class="topbar">
+        <h1 th:text="${project.name}">Project</h1>
+        <div class="user-meta" th:text="${user.email}">user</div>
+    </div>
+
+    <div class="project-nav" th:replace="~{fragments/project-nav :: projectNav(${project}, ${activeNav})}"></div>
+
+    <div class="grid-2">
+        <div class="stat">
+            <div class="label">Status</div>
+            <div class="value" th:text="${project.status}">ACTIVE</div>
+        </div>
+        <div class="stat">
+            <div class="label">Risk grade</div>
+            <div class="value" th:text="${risk != null ? risk.riskGrade : '—'}">A</div>
+        </div>
+    </div>
+
+    <div class="panel" style="margin-top:1rem;">
+        <h2>Overview</h2>
+        <p class="muted" th:text="${project.description != null ? project.description : 'No description'}">desc</p>
+        <p th:if="${project.repositoryUrl != null}">
+            Repository: <a th:href="${project.repositoryUrl}" th:text="${project.repositoryUrl}" target="_blank" rel="noopener">url</a>
+        </p>
+        <p th:if="${risk != null}">
+            Score <strong th:text="${risk.riskScore}">0</strong>
+            · Critical <span th:text="${risk.criticalCount}">0</span>
+            · High <span th:text="${risk.highCount}">0</span>
+            · Medium <span th:text="${risk.mediumCount}">0</span>
+            · Low <span th:text="${risk.lowCount}">0</span>
+        </p>
+    </div>
+</section>
+</body>
+</html>

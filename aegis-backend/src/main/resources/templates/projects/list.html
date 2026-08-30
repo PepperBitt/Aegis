@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title th:text="${organization.name + ' · Projects · AEGIS'}">Projects · AEGIS</title>
+</head>
+<body>
+<section>
+    <div class="topbar">
+        <h1 th:text="${organization.name + ' — Projects'}">Projects</h1>
+        <div class="user-meta" th:text="${user.email}">user</div>
+    </div>
+    <div class="panel">
+        <table class="table" th:if="${!projects.isEmpty()}">
+            <thead>
+            <tr><th>Name</th><th>Ecosystem</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${projects}">
+                <td th:text="${p.name}">Project</td>
+                <td th:text="${p.ecosystem}">maven</td>
+                <td><span class="badge" th:text="${p.status}">ACTIVE</span></td>
+                <td><a th:href="@{/web/projects/{id}(id=${p.id})}">Open</a></td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${projects.isEmpty()}">No projects in this organization.</p>
+    </div>
+</section>
+</body>
+</html>

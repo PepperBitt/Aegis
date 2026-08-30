@@ -1,5 +1,6 @@
 package com.aegis.auth.application;
 
+import com.aegis.audit.annotation.AuditAction;
 import com.aegis.auth.api.dto.*;
 import com.aegis.auth.domain.RefreshToken;
 import com.aegis.auth.domain.Role;
@@ -19,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,8 +32,10 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final LoginRateLimiter loginRateLimiter;
 
     @Transactional
+    @AuditAction(action = "USER_REGISTER", resourceType = "USER")
     public UserResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
@@ -53,6 +57,14 @@ public class AuthService {
 
     @Transactional
     public TokenResponse login(LoginRequest request) {
+        return login(request, "127.0.0.1");
+    }
+
+    @Transactional
+    @AuditAction(action = "USER_LOGIN", resourceType = "USER")
+    public TokenResponse login(LoginRequest request, String clientIp) {
+        loginRateLimiter.checkAndIncrement(clientIp, request.getEmail());
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -87,23 +99,34 @@ public class AuthService {
     @Transactional
     public TokenResponse refreshToken(RefreshRequest request) {
         String rawRefreshToken = request.getRefreshToken();
-        String tokenHash = hashToken(rawRefreshToken);
+        if (rawRefreshToken == null || rawRefreshToken.isBlank()) {
+            throw new IllegalArgumentException("Refresh token is required");
+        }
 
+        String tokenHash = hashToken(rawRefreshToken);
         RefreshToken refreshToken = refreshTokenRepository.findByTokenHash(tokenHash)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token"));
 
-        if (refreshToken.isRevoked() || refreshToken.getExpiresAt().isBefore(Instant.now())) {
-            throw new IllegalArgumentException("Expired or revoked refresh token");
+        User user = refreshToken.getUser();
+
+        // Security: Reuse detection for revoked refresh token
+        if (refreshToken.isRevoked()) {
+            List<RefreshToken> activeTokens = refreshTokenRepository.findByUserIdAndRevokedFalse(user.getId());
+            activeTokens.forEach(t -> t.setRevoked(true));
+            refreshTokenRepository.saveAll(activeTokens);
+            throw new IllegalArgumentException("Revoked refresh token reuse detected");
         }
 
-        User user = refreshToken.getUser();
-        String accessToken = jwtService.generateToken(user);
+        if (refreshToken.getExpiresAt().isBefore(Instant.now())) {
+            throw new IllegalArgumentException("Expired refresh token");
+        }
 
-        // Optional: rotate refresh token
-        String newRawRefreshToken = UUID.randomUUID().toString();
-        refreshToken.setRevoked(true); // Revoke the old token
+        // Revoke old token
+        refreshToken.setRevoked(true);
         refreshTokenRepository.save(refreshToken);
 
+        // Issue new refresh token
+        String newRawRefreshToken = UUID.randomUUID().toString();
         RefreshToken newRefreshToken = RefreshToken.builder()
                 .user(user)
                 .tokenHash(hashToken(newRawRefreshToken))
@@ -111,6 +134,8 @@ public class AuthService {
                 .revoked(false)
                 .build();
         refreshTokenRepository.save(newRefreshToken);
+
+        String accessToken = jwtService.generateToken(user);
 
         return TokenResponse.builder()
                 .accessToken(accessToken)
@@ -120,7 +145,7 @@ public class AuthService {
                 .build();
     }
 
-    private UserResponse mapToUserResponse(User user) {
+    public UserResponse mapToUserResponse(User user) {
         return UserResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -130,7 +155,7 @@ public class AuthService {
                 .build();
     }
 
-    private String hashToken(String token) {
+    public String hashToken(String token) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
