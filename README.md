@@ -35,12 +35,6 @@ docker compose up -d --build
 | MailHog | http://localhost:8025 |
 | Neo4j Browser | http://localhost:7474 |
 
-Seeded users (password `Aegis@123`):
-
-- `admin@aegis.local`
-- `analyst@aegis.local`
-- `developer@aegis.local`
-- `auditor@aegis.local`
 
 ### Local development
 
